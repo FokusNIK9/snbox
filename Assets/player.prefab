@@ -1,0 +1,66 @@
+{
+  "RootObject": {
+    "Id": "f7d2f44c-3580-459f-937b-9520448f7234",
+    "Name": "PlayerUnit",
+    "Enabled": true,
+    "Components": [
+      {
+        "__type": "Sandbox.CharacterController",
+        "__enabled": true,
+        "Acceleration": 10,
+        "Bounciness": 0.3,
+        "GroundAngle": 45,
+        "Height": 64,
+        "Radius": 16,
+        "StepHeight": 18
+      },
+      {
+        "__type": "PlayerUnitController",
+        "__enabled": true,
+        "MoveSpeed": 200,
+        "RotationSmoothing": 10,
+        "Friction": 6,
+        "Acceleration": 10,
+        "GravityStrength": 800
+      },
+      {
+        "__type": "UnitHealth",
+        "__enabled": true,
+        "MaxHealth": 100,
+        "AllowRespawn": true,
+        "RespawnDelay": 3,
+        "HideOnDeath": true
+      },
+      {
+        "__type": "UnitNameTag",
+        "__enabled": true,
+        "HeightOffset": 80,
+        "HideForOwner": false
+      },
+      {
+        "__type": "UnitAnimSync",
+        "__enabled": true,
+        "SpeedParam": "move_speed",
+        "GroundedParam": "grounded",
+        "AliveParam": "alive",
+        "WishDirParam": "wish_direction"
+      }
+    ],
+    "Children": [
+      {
+        "Id": "a1b2c3d4-e5f6-4789-8b9c-0d1e2f3a4b5c",
+        "Name": "Visual",
+        "Enabled": true,
+        "Components": [
+          {
+            "__type": "Sandbox.SkinnedModelRenderer",
+            "__enabled": true,
+            "Model": "models/citizen/citizen.vmdl"
+          }
+        ]
+      }
+    ]
+  },
+  "ResourceVersion": 1,
+  "__references": []
+}
