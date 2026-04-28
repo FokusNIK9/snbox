@@ -1,6 +1,7 @@
 @echo off
-echo Updating project...
-git pull
+cd /d "%~dp0"
+echo Pulling latest updates...
+git pull origin main
 echo.
-echo Done! Project is up to date.
-pause
+echo Done! Press any key to close.
+pause >nul
