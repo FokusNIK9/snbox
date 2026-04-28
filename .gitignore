@@ -12,6 +12,21 @@ Properties/*
 code/obj/*
 code/Properties/*
 
+
+# Project exclusions
+Libraries/
+__pycache__/
+.obsidian/
+.gemini/
+box_main/
+box_main/
+
+# Media files
+*.png
+*.jpg
+*.jpeg
+*.gif
+
 # Auto-generated asset related files
 .sbox/*
 *.generated.*
