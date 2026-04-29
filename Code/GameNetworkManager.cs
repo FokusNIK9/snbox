@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 /// <summary>
 /// Manages lobby creation, player connections, and unit spawning.
 /// Place on a single GameObject in the scene. Configure PlayerPrefab and SpawnPoints in the inspector.
+/// If a NetworkHelper component is present on the same object (or in the scene),
+/// it handles network startup — GameNetworkManager will not create a lobby on its own.
 /// </summary>
 public sealed class GameNetworkManager : Component, Component.INetworkListener
 {
@@ -20,7 +22,7 @@ public sealed class GameNetworkManager : Component, Component.INetworkListener
 	[Property, Group( "Lobby" )]
 	public string LobbyName { get; set; } = "TD Game";
 
-	[Property, Group( "Lobby" ), Description( "Automatically create a lobby when the scene starts" )]
+	[Property, Group( "Lobby" ), Description( "Automatically create a lobby when the scene starts. Ignored if a NetworkHelper is present." )]
 	public bool AutoCreateLobby { get; set; } = true;
 
 	// ── Spawning ──────────────────────────────────────────
@@ -37,24 +39,52 @@ public sealed class GameNetworkManager : Component, Component.INetworkListener
 	// ── Runtime state ─────────────────────────────────────
 
 	private int _nextSpawnIndex;
+	private bool _lobbyCreated;
 
 	protected override void OnStart()
 	{
-		if ( AutoCreateLobby && !Networking.IsActive )
+		if ( !AutoCreateLobby )
+			return;
+
+		if ( Networking.IsActive )
+			return;
+
+		if ( _lobbyCreated )
+			return;
+
+		// If a NetworkHelper exists in the scene, let it handle network startup.
+		var networkHelper = Scene.GetAllComponents<NetworkHelper>().FirstOrDefault();
+		if ( networkHelper is not null && networkHelper.Active )
 		{
-			CreateLobby();
+			Log.Info( "GameNetworkManager: NetworkHelper found, skipping auto lobby creation." );
+			return;
 		}
+
+		CreateLobby();
 	}
 
 	public void CreateLobby()
 	{
+		if ( _lobbyCreated )
+		{
+			Log.Warning( "GameNetworkManager: CreateLobby called but lobby already created this session." );
+			return;
+		}
+
+		if ( Networking.IsActive )
+		{
+			Log.Warning( "GameNetworkManager: CreateLobby called but networking is already active." );
+			return;
+		}
+
+		_lobbyCreated = true;
 		Networking.CreateLobby( new LobbyConfig() );
 	}
 
 	public void OnActive( Connection connection )
 	{
 		var spawnPos = GetNextSpawnPosition();
-		GameObject player;
+		GameObject player = null;
 
 		if ( PlayerPrefab.IsValid() )
 		{
@@ -62,13 +92,12 @@ public sealed class GameNetworkManager : Component, Component.INetworkListener
 		}
 		else
 		{
-			// Fallback: Try to clone by path directly
-			player = GameObject.Clone( "player.prefab", new Transform( spawnPos ) );
+			Log.Warning( "GameNetworkManager: PlayerPrefab is not assigned. Assign it in the inspector on Game Controller." );
 		}
 
-		if ( player == null )
+		if ( player is null || !player.IsValid() )
 		{
-			Log.Warning( "GameNetworkManager: Failed to spawn player! Prefab not found." );
+			Log.Warning( $"GameNetworkManager: Failed to spawn player for {connection.DisplayName}. Check PlayerPrefab assignment." );
 			return;
 		}
 

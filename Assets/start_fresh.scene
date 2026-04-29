@@ -321,7 +321,7 @@
           "__guid": "fef31136-9bbe-44a6-b53c-7062d5140c71",
           "__enabled": true,
           "Flags": 0,
-          "AutoCreateLobby": true,
+          "AutoCreateLobby": false,
           "IsPublic": true,
           "LobbyName": "TD Game",
           "MaxPlayers": 20,
