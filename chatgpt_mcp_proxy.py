@@ -139,12 +139,21 @@ class McpClient:
 # =====================================================
 
 try:
-	from fastapi import FastAPI, HTTPException, Request
+	from fastapi import FastAPI, HTTPException
 	from fastapi.middleware.cors import CORSMiddleware
-	from fastapi.responses import JSONResponse
+	from pydantic import BaseModel, Field
 except ImportError:
 	print("Установите FastAPI: pip install fastapi uvicorn")
 	sys.exit(1)
+
+
+class CallToolRequest(BaseModel):
+	tool_name: str = Field(..., description="Name of the MCP tool to call. Use GET /tools to see available names.")
+	arguments: Dict[str, Any] = Field(default_factory=dict, description="Tool arguments as key-value pairs.")
+
+
+class ConsoleRequest(BaseModel):
+	command: str = Field(..., description="Console command to execute in s&box.")
 
 mcp = McpClient()
 
@@ -200,35 +209,19 @@ def get_tools():
 @app.post(
 	"/call_tool",
 	summary="Call any MCP tool by name",
-	description="Call any Ozmium MCP tool. Use GET /tools first to see available tools. Body: {tool_name, arguments}.",
+	description="Call any Ozmium MCP tool. Use GET /tools first to see available names.",
 )
-async def call_tool(request: Request):
+def call_tool(body: CallToolRequest):
+	clean_args = {k: v for k, v in body.arguments.items() if v is not None}
 	try:
-		body = await request.json()
-	except Exception:
-		raise HTTPException(status_code=400, detail="Invalid JSON body")
-
-	tool_name = body.get("tool_name") or body.get("tool") or body.get("name")
-	arguments = body.get("arguments") or body.get("params") or body.get("args") or {}
-
-	if not tool_name:
-		raise HTTPException(
-			status_code=400,
-			detail="Укажите tool_name — имя инструмента. Вызовите GET /tools для списка."
-		)
-
-	# Убираем нестроковые ключи и None значения
-	clean_args = {k: v for k, v in arguments.items() if v is not None}
-
-	try:
-		result = mcp.call_tool(tool_name, clean_args)
-		return {"tool": tool_name, "result": result}
+		result = mcp.call_tool(body.tool_name, clean_args)
+		return {"tool": body.tool_name, "result": result}
 	except TimeoutError:
-		raise HTTPException(status_code=504, detail=f"Таймаут вызова {tool_name}")
+		raise HTTPException(status_code=504, detail=f"Timeout calling {body.tool_name}")
 	except RuntimeError as e:
 		raise HTTPException(status_code=502, detail=str(e))
 	except Exception as e:
-		raise HTTPException(status_code=500, detail=f"Ошибка: {e}")
+		raise HTTPException(status_code=500, detail=str(e))
 
 
 # --- Быстрые эндпоинты для самых частых операций ---
@@ -301,13 +294,9 @@ def object_details(object_id: str):
 	summary="Console command",
 	description="Run a console command in s&box editor.",
 )
-async def run_console(request: Request):
-	body = await request.json()
-	command = body.get("command", "")
-	if not command:
-		raise HTTPException(status_code=400, detail="Укажите command")
+def run_console(body: ConsoleRequest):
 	try:
-		return mcp.call_tool("run_console_command", {"command": command})
+		return mcp.call_tool("run_console_command", {"command": body.command})
 	except Exception as e:
 		raise HTTPException(status_code=502, detail=str(e))
 
