@@ -19,6 +19,7 @@ ChatGPT <-> Ozmium MCP Bridge for S&box
 REST API + OpenAPI схему для ChatGPT.
 """
 
+import argparse
 import json
 import threading
 import time
@@ -31,6 +32,7 @@ from typing import Any, Dict, List, Optional
 MCP_SSE_URL = "http://localhost:8098/sse"
 PROXY_PORT = 8001
 PROXY_HOST = "0.0.0.0"
+SERVER_URL = None  # Публичный URL (ngrok), задаётся через --server-url
 
 # =====================================================
 # MCP Client — подключение к Ozmium MCP Server по SSE
@@ -146,16 +148,22 @@ except ImportError:
 
 mcp = McpClient()
 
-app = FastAPI(
-	title="Ozmium S&box MCP Bridge",
-	description=(
-		"REST API мост между ChatGPT и S&box редактором через Ozmium MCP Server. "
-		"Позволяет читать сцену, создавать/изменять объекты, управлять editor'ом и многое другое. "
-		"Используйте GET /tools для получения списка доступных инструментов, "
-		"затем POST /call_tool для вызова нужного инструмента."
-	),
-	version="1.0.0",
-)
+def create_app(server_url: Optional[str] = None) -> "FastAPI":
+	servers = [{"url": server_url}] if server_url else None
+	_app = FastAPI(
+		title="Ozmium S&box MCP Bridge",
+		description=(
+			"REST API мост между ChatGPT и S&box редактором через Ozmium MCP Server. "
+			"Позволяет читать сцену, создавать/изменять объекты, управлять editor'ом и многое другое. "
+			"Используйте GET /tools для получения списка доступных инструментов, "
+			"затем POST /call_tool для вызова нужного инструмента."
+		),
+		version="1.0.0",
+		servers=servers,
+	)
+	return _app
+
+app = create_app()
 
 app.add_middleware(
 	CORSMiddleware,
@@ -348,18 +356,51 @@ def health():
 if __name__ == "__main__":
 	import uvicorn
 
+	parser = argparse.ArgumentParser(description="Ozmium MCP Bridge для ChatGPT")
+	parser.add_argument("--server-url", type=str, default=None,
+		help="Публичный URL (ngrok) для OpenAPI servers. Пример: https://abc.ngrok-free.app")
+	parser.add_argument("--port", type=int, default=PROXY_PORT,
+		help=f"Порт сервера (по умолчанию {PROXY_PORT})")
+	parser.add_argument("--mcp-url", type=str, default=MCP_SSE_URL,
+		help=f"URL Ozmium MCP SSE (по умолчанию {MCP_SSE_URL})")
+	args = parser.parse_args()
+
+	# Обновляем конфигурацию
+	if args.mcp_url != MCP_SSE_URL:
+		mcp.sse_url = args.mcp_url
+
+	# Добавляем servers в OpenAPI схему для ChatGPT
+	if args.server_url:
+		def custom_openapi():
+			if app.openapi_schema:
+				return app.openapi_schema
+			schema = original_openapi()
+			schema["servers"] = [{"url": args.server_url}]
+			app.openapi_schema = schema
+			return schema
+		original_openapi = app.openapi
+		app.openapi = custom_openapi
+
+	port = args.port
+
 	print("=" * 60)
 	print("  Ozmium MCP Bridge для ChatGPT")
 	print("=" * 60)
-	print(f"  MCP Server: {MCP_SSE_URL}")
-	print(f"  REST API:   http://localhost:{PROXY_PORT}")
-	print(f"  Swagger UI: http://localhost:{PROXY_PORT}/docs")
-	print(f"  OpenAPI:    http://localhost:{PROXY_PORT}/openapi.json")
-	print()
-	print("  Следующий шаг:")
-	print("    ngrok http 8001")
-	print("  Затем в ChatGPT Actions импортируйте:")
-	print("    https://ваш-ngrok-url/openapi.json")
+	print(f"  MCP Server: {args.mcp_url}")
+	print(f"  REST API:   http://localhost:{port}")
+	print(f"  Swagger UI: http://localhost:{port}/docs")
+	print(f"  OpenAPI:    http://localhost:{port}/openapi.json")
+	if args.server_url:
+		print(f"  Server URL: {args.server_url}")
+		print()
+		print(f"  В ChatGPT Actions импортируйте:")
+		print(f"    {args.server_url}/openapi.json")
+	else:
+		print()
+		print("  Следующий шаг:")
+		print("    ngrok http 8001")
+		print("  Затем перезапустите с --server-url:")
+		print("    python chatgpt_mcp_proxy.py --server-url https://ваш-ngrok.app")
 	print("=" * 60)
 
-	uvicorn.run(app, host=PROXY_HOST, port=PROXY_PORT)
+	uvicorn.run(app, host=PROXY_HOST, port=port)
