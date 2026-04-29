@@ -152,12 +152,7 @@ def create_app(server_url: Optional[str] = None) -> "FastAPI":
 	servers = [{"url": server_url}] if server_url else None
 	_app = FastAPI(
 		title="Ozmium S&box MCP Bridge",
-		description=(
-			"REST API мост между ChatGPT и S&box редактором через Ozmium MCP Server. "
-			"Позволяет читать сцену, создавать/изменять объекты, управлять editor'ом и многое другое. "
-			"Используйте GET /tools для получения списка доступных инструментов, "
-			"затем POST /call_tool для вызова нужного инструмента."
-		),
+		description="S&box editor bridge via Ozmium MCP. Use GET /tools then POST /call_tool.",
 		version="1.0.0",
 		servers=servers,
 	)
@@ -176,12 +171,8 @@ app.add_middleware(
 
 @app.get(
 	"/tools",
-	summary="Список всех MCP инструментов",
-	description=(
-		"Возвращает полный список доступных инструментов Ozmium MCP Server "
-		"с именами, описаниями и параметрами. Вызови это ПЕРВЫМ чтобы узнать "
-		"какие инструменты доступны."
-	),
+	summary="List all MCP tools",
+	description="Returns all available Ozmium MCP tools with names, descriptions and parameters. Call this first.",
 )
 def get_tools():
 	try:
@@ -208,23 +199,8 @@ def get_tools():
 
 @app.post(
 	"/call_tool",
-	summary="Вызвать MCP инструмент",
-	description=(
-		"Вызывает любой инструмент Ozmium MCP Server по имени. "
-		"Сначала вызови GET /tools чтобы узнать доступные инструменты и их параметры. "
-		"\n\nПопулярные инструменты:\n"
-		"- get_scene_summary — обзор сцены (вызови первым)\n"
-		"- find_game_objects — поиск объектов по имени/тегу/компоненту\n"
-		"- get_game_object_details — детали объекта по id или name\n"
-		"- get_component_properties — свойства компонента\n"
-		"- set_component_property — изменить свойство компонента\n"
-		"- create_game_object — создать новый объект\n"
-		"- add_component — добавить компонент к объекту\n"
-		"- spawn_prefab — заспавнить префаб\n"
-		"- run_console_command — выполнить консольную команду\n"
-		"- set_transform — изменить позицию/вращение/масштаб объекта\n"
-		"- toggle_play_mode — включить/выключить режим игры\n"
-	),
+	summary="Call any MCP tool by name",
+	description="Call any Ozmium MCP tool. Use GET /tools first to see available tools. Body: {tool_name, arguments}.",
 )
 async def call_tool(request: Request):
 	try:
@@ -259,8 +235,8 @@ async def call_tool(request: Request):
 
 @app.get(
 	"/scene/summary",
-	summary="Обзор сцены",
-	description="Быстрый обзор текущей сцены: объекты, компоненты, теги, префабы.",
+	summary="Scene overview",
+	description="Quick overview: object counts, components, tags, prefabs.",
 )
 def scene_summary():
 	try:
@@ -271,8 +247,8 @@ def scene_summary():
 
 @app.get(
 	"/scene/hierarchy",
-	summary="Дерево сцены",
-	description="Иерархия объектов сцены. rootOnly=true для верхнего уровня.",
+	summary="Scene hierarchy",
+	description="Scene object tree. rootOnly=true for top-level only.",
 )
 def scene_hierarchy(rootOnly: bool = True, includeDisabled: bool = True):
 	try:
@@ -286,8 +262,8 @@ def scene_hierarchy(rootOnly: bool = True, includeDisabled: bool = True):
 
 @app.get(
 	"/scene/find",
-	summary="Поиск объектов",
-	description="Поиск GameObjects по имени, тегу или компоненту.",
+	summary="Find objects",
+	description="Search GameObjects by name, tag or component.",
 )
 def find_objects(
 	name: Optional[str] = None,
@@ -310,8 +286,8 @@ def find_objects(
 
 @app.get(
 	"/scene/object/{object_id}",
-	summary="Детали объекта",
-	description="Получить полные детали GameObject по GUID.",
+	summary="Object details",
+	description="Get full GameObject details by GUID.",
 )
 def object_details(object_id: str):
 	try:
@@ -322,8 +298,8 @@ def object_details(object_id: str):
 
 @app.post(
 	"/scene/console",
-	summary="Консольная команда",
-	description="Выполнить консольную команду в s&box.",
+	summary="Console command",
+	description="Run a console command in s&box editor.",
 )
 async def run_console(request: Request):
 	body = await request.json()
@@ -338,8 +314,8 @@ async def run_console(request: Request):
 
 @app.get(
 	"/health",
-	summary="Проверка соединения",
-	description="Проверяет что MCP сервер доступен.",
+	summary="Health check",
+	description="Check if MCP server is reachable.",
 )
 def health():
 	try:
