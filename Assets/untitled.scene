@@ -1,0 +1,464 @@
+{
+  "__guid": "41aefd1b-d1e7-4a67-b649-c18215a28700",
+  "GameObjects": [
+    {
+      "__guid": "041d71fb-4c40-4767-b78c-b032f6441a07",
+      "__version": 2,
+      "Flags": 0,
+      "Name": "Scene Information",
+      "Position": "0,0,0",
+      "Rotation": "0,0,0,1",
+      "Scale": "1,1,1",
+      "Tags": "",
+      "Enabled": true,
+      "NetworkMode": 2,
+      "NetworkFlags": 0,
+      "NetworkOrphaned": 0,
+      "NetworkTransmit": true,
+      "OwnerTransfer": 1,
+      "Components": [
+        {
+          "__type": "Sandbox.SceneInformation",
+          "__guid": "4f717441-a341-4bdf-baee-2c5b00702626",
+          "__enabled": true,
+          "Flags": 0,
+          "Author": null,
+          "Changes": null,
+          "Description": "",
+          "Group": null,
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "SceneTags": "",
+          "Title": "TD Game Fresh Start",
+          "Version": null
+        }
+      ],
+      "Children": []
+    },
+    {
+      "__guid": "7f889b5d-e4e3-42d7-af90-f7cef694f1fc",
+      "__version": 2,
+      "Flags": 0,
+      "Name": "Sun",
+      "Position": "0,0,200",
+      "Rotation": "-0.408248007,0.408248007,0.408248007,0.707107008",
+      "Scale": "1,1,1",
+      "Tags": "light_directional,light",
+      "Enabled": true,
+      "NetworkMode": 2,
+      "NetworkFlags": 0,
+      "NetworkOrphaned": 0,
+      "NetworkTransmit": true,
+      "OwnerTransfer": 1,
+      "Components": [
+        {
+          "__type": "Sandbox.DirectionalLight",
+          "__guid": "a95c5b12-ec38-412c-9ae8-1c40064b5387",
+          "__enabled": true,
+          "Flags": 0,
+          "FogMode": "Enabled",
+          "FogStrength": 1,
+          "LightColor": "0.91373,0.98039,1,1",
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "ShadowBias": 0.0005,
+          "ShadowCascadeCount": 4,
+          "ShadowCascadeSplitRatio": 0.91,
+          "ShadowHardness": 0,
+          "Shadows": true,
+          "SkyColor": "0,0,0,0",
+          "Visualizer": {}
+        }
+      ],
+      "Children": []
+    },
+    {
+      "__guid": "ad4eb74d-262f-49cf-88e0-fd4c230f4251",
+      "__version": 2,
+      "Flags": 0,
+      "Name": "Floor",
+      "Position": "0,0,0",
+      "Rotation": "0,0,0,1",
+      "Scale": "100,100,1",
+      "Tags": "",
+      "Enabled": true,
+      "NetworkMode": 2,
+      "NetworkFlags": 0,
+      "NetworkOrphaned": 0,
+      "NetworkTransmit": true,
+      "OwnerTransfer": 1,
+      "Components": [
+        {
+          "__type": "Sandbox.ModelRenderer",
+          "__guid": "029746ad-e1b7-4a22-a75d-335abe4fb3cb",
+          "__enabled": true,
+          "Flags": 0,
+          "BodyGroups": 18446744073709551615,
+          "CreateAttachments": false,
+          "LodOverride": null,
+          "MaterialGroup": null,
+          "MaterialOverride": null,
+          "Materials": null,
+          "Model": "models/dev/plane.vmdl",
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "RenderOptions": {
+            "GameLayer": true,
+            "OverlayLayer": false,
+            "BloomLayer": false,
+            "AfterUILayer": false
+          },
+          "RenderType": "On",
+          "Tint": "1,1,1,1"
+        },
+        {
+          "__type": "Sandbox.BoxCollider",
+          "__guid": "4bfc7538-959f-40b1-a6d7-a79727b16d39",
+          "__enabled": true,
+          "Flags": 0,
+          "Center": "0,0,-0.5",
+          "ColliderFlags": 0,
+          "Elasticity": null,
+          "Friction": null,
+          "IsTrigger": false,
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "OnObjectTriggerEnter": null,
+          "OnObjectTriggerExit": null,
+          "OnTriggerEnter": null,
+          "OnTriggerExit": null,
+          "RollingResistance": null,
+          "Scale": "100,100,1",
+          "Static": false,
+          "Surface": null,
+          "SurfaceVelocity": "0,0,0"
+        }
+      ],
+      "Children": []
+    },
+    {
+      "__guid": "cc74888d-8353-4892-b81a-de618d63b54c",
+      "__version": 2,
+      "Flags": 0,
+      "Name": "Main Camera",
+      "Position": "-122.479309,39.7694969,773.236755",
+      "Rotation": "-1.25925173E-08,0.660210609,1.43257202E-08,0.751080453",
+      "Scale": "1,1,1",
+      "Tags": "",
+      "Enabled": true,
+      "NetworkMode": 2,
+      "NetworkFlags": 0,
+      "NetworkOrphaned": 0,
+      "NetworkTransmit": true,
+      "OwnerTransfer": 1,
+      "Components": [
+        {
+          "__type": "Sandbox.CameraComponent",
+          "__guid": "6604852c-08d8-4f27-96d5-e4b89baaa0f6",
+          "__enabled": true,
+          "Flags": 0,
+          "BackgroundColor": "0.33333,0.46275,0.52157,1",
+          "ClearFlags": "All",
+          "EnablePostProcessing": true,
+          "FieldOfView": 60,
+          "FovAxis": "Horizontal",
+          "IsMainCamera": true,
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "Orthographic": false,
+          "OrthographicHeight": 1204,
+          "PostProcessAnchor": null,
+          "Priority": 1,
+          "RenderExcludeTags": "",
+          "RenderTags": "",
+          "RenderTexture": null,
+          "TargetEye": "None",
+          "Viewport": "0,0,1,1",
+          "ZFar": 10000,
+          "ZNear": 10
+        },
+        {
+          "__type": "TDCameraController",
+          "__guid": "faea4b0a-058d-435d-af5a-6c6ad8008328",
+          "__enabled": true,
+          "Flags": 0,
+          "AllowZoom": true,
+          "BackOffset": 200,
+          "FollowSpeed": 8,
+          "Height": 600,
+          "MaxHeight": 1200,
+          "MinHeight": 300,
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "PitchAngle": 60,
+          "ZoomSmoothing": 6,
+          "ZoomStep": 50
+        }
+      ],
+      "Children": []
+    },
+    {
+      "__guid": "ee431e8e-80dd-44e1-bff8-495750f3cbb5",
+      "__version": 2,
+      "Flags": 0,
+      "Name": "Spawn Point 1",
+      "Position": "-200,0,4.12116241",
+      "Rotation": "0,0,0,1",
+      "Scale": "1,1,1",
+      "Tags": "",
+      "Enabled": true,
+      "NetworkMode": 2,
+      "NetworkFlags": 0,
+      "NetworkOrphaned": 0,
+      "NetworkTransmit": true,
+      "OwnerTransfer": 1,
+      "Components": [
+        {
+          "__type": "Sandbox.SpawnPoint",
+          "__guid": "d2d5441e-c0bb-4fb2-8536-6d958537052f",
+          "__enabled": true,
+          "Flags": 0,
+          "Color": "0.8902,0.31765,0.05098,1",
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null
+        }
+      ],
+      "Children": []
+    },
+    {
+      "__guid": "a1b2c3d4-e5f6-4789-8b9c-0d1e2f3a4b5d",
+      "__version": 2,
+      "Flags": 0,
+      "Name": "Spawn Point 2",
+      "Position": "200,0,2.73356628",
+      "Rotation": "0,0,0,1",
+      "Scale": "1,1,1",
+      "Tags": "",
+      "Enabled": true,
+      "NetworkMode": 2,
+      "NetworkFlags": 0,
+      "NetworkOrphaned": 0,
+      "NetworkTransmit": true,
+      "OwnerTransfer": 1,
+      "Components": [
+        {
+          "__type": "Sandbox.SpawnPoint",
+          "__guid": "27fd1c0a-3ee4-4362-80cb-3cf5183ba163",
+          "__enabled": true,
+          "Flags": 0,
+          "Color": "0.8902,0.31765,0.05098,1",
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null
+        }
+      ],
+      "Children": []
+    },
+    {
+      "__guid": "2101af4f-00bb-4669-88fc-2316a3235f82",
+      "__version": 2,
+      "Flags": 0,
+      "Name": "Game Controller",
+      "Position": "0,0,50",
+      "Rotation": "0,0,0,1",
+      "Scale": "1,1,1",
+      "Tags": "",
+      "Enabled": true,
+      "NetworkMode": 2,
+      "NetworkFlags": 0,
+      "NetworkOrphaned": 0,
+      "NetworkTransmit": true,
+      "OwnerTransfer": 1,
+      "Components": [
+        {
+          "__type": "Sandbox.NetworkHelper",
+          "__guid": "a544e48a-c352-4d80-b6e2-28bf22876c0a",
+          "__enabled": true,
+          "Flags": 0,
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "PlayerPrefab": null,
+          "SpawnPoints": [],
+          "StartServer": true
+        },
+        {
+          "__type": "GameNetworkManager",
+          "__guid": "fef31136-9bbe-44a6-b53c-7062d5140c71",
+          "__enabled": true,
+          "Flags": 0,
+          "AutoCreateLobby": false,
+          "IsPublic": true,
+          "LobbyName": "TD Game",
+          "MaxPlayers": 20,
+          "OnComponentDestroy": null,
+          "OnComponentDisabled": null,
+          "OnComponentEnabled": null,
+          "OnComponentFixedUpdate": null,
+          "OnComponentStart": null,
+          "OnComponentUpdate": null,
+          "PlayerPrefab": {
+            "_type": "gameobject",
+            "prefab": "player.prefab"
+          },
+          "SpawnPoints": [],
+          "SpawnRandomRadius": 50
+        }
+      ],
+      "Children": []
+    },
+    {
+      "__guid": "7872b4f0-a42b-4bd2-a60f-0c50f783625a",
+      "__version": 2,
+      "__Prefab": "player.prefab",
+      "__PrefabInstancePatch": {
+        "AddedObjects": [],
+        "RemovedObjects": [],
+        "PropertyOverrides": [
+          {
+            "Target": {
+              "Type": "GameObject",
+              "IdValue": "f7d2f44c-3580-459f-937b-9520448f7234"
+            },
+            "Property": "Position",
+            "Value": "-22.4793053,39.7695007,0.03125"
+          },
+          {
+            "Target": {
+              "Type": "GameObject",
+              "IdValue": "f7d2f44c-3580-459f-937b-9520448f7234"
+            },
+            "Property": "NetworkMode",
+            "Value": 1
+          },
+          {
+            "Target": {
+              "Type": "Component",
+              "IdValue": "713e96b2-e00a-4005-8283-a7f3f63b9f34"
+            },
+            "Property": "AnimationHelper",
+            "Value": {
+              "_type": "component",
+              "component_id": "9c158ed0-54ca-4d5c-b6b6-a122983ab026",
+              "go": "a1b2c3d4-e5f6-4789-8b9c-0d1e2f3a4b5c",
+              "component_type": "CitizenAnimationHelper"
+            }
+          },
+          {
+            "Target": {
+              "Type": "Component",
+              "IdValue": "713e96b2-e00a-4005-8283-a7f3f63b9f34"
+            },
+            "Property": "Controller",
+            "Value": {
+              "_type": "component",
+              "component_id": "9a1c3f48-efd3-4c7c-ad8d-86d494b2457e",
+              "go": "f7d2f44c-3580-459f-937b-9520448f7234",
+              "component_type": "CharacterController"
+            }
+          },
+          {
+            "Target": {
+              "Type": "Component",
+              "IdValue": "9c158ed0-54ca-4d5c-b6b6-a122983ab026"
+            },
+            "Property": "Target",
+            "Value": {
+              "_type": "component",
+              "component_id": "5f8390e4-5b1a-419a-84b1-40bc0e098b32",
+              "go": "a1b2c3d4-e5f6-4789-8b9c-0d1e2f3a4b5c",
+              "component_type": "SkinnedModelRenderer"
+            }
+          }
+        ],
+        "MovedObjects": []
+      },
+      "__PrefabIdToInstanceId": {
+        "f7d2f44c-3580-459f-937b-9520448f7234": "7872b4f0-a42b-4bd2-a60f-0c50f783625a",
+        "9a1c3f48-efd3-4c7c-ad8d-86d494b2457e": "b8029884-e993-4df5-bbb3-2ea932d8dee5",
+        "713e96b2-e00a-4005-8283-a7f3f63b9f34": "ac8c9c11-5bf9-4e9c-92ec-4c7cd25fb42c",
+        "a38e6cb5-fcd6-4d91-a571-bcf35226ef24": "a156a04c-f8b4-44ed-8c1c-c4a1caeb28fa",
+        "d63622d0-0dc0-46ee-8937-be5fd78a9e23": "be2889e4-4b9c-4675-b69c-6f64dd8de490",
+        "a1b2c3d4-e5f6-4789-8b9c-0d1e2f3a4b5c": "b7fc2cdb-20ac-4ec5-bf8f-d531576f70bd",
+        "5f8390e4-5b1a-419a-84b1-40bc0e098b32": "bad2ed02-2821-4a72-bd01-dbec44464a99",
+        "9c158ed0-54ca-4d5c-b6b6-a122983ab026": "254a73fa-9298-4ba7-9952-3558255de892"
+      }
+    }
+  ],
+  "SceneProperties": {
+    "NetworkInterpolation": true,
+    "TimeScale": 1,
+    "WantsSystemScene": true,
+    "Metadata": {
+      "Title": "TD Game Fresh Start"
+    },
+    "NavMesh": {
+      "Enabled": false,
+      "IncludeStaticBodies": true,
+      "IncludeKeyframedBodies": true,
+      "EditorAutoUpdate": true,
+      "AgentHeight": 64,
+      "AgentRadius": 16,
+      "AgentStepSize": 18,
+      "AgentMaxSlope": 45,
+      "ExcludedBodies": "",
+      "IncludedBodies": "",
+      "DeferGeneration": false,
+      "CustomBounds": false
+    },
+    "GameObjectSystems": {
+      "Sandbox.MovieMaker.MovieRecorderSystem": {
+        "DisableClientRecording": false
+      },
+      "Sandbox.Clutter.ClutterGridSystem": {
+        "Storage": {
+          "$blob": "02b7fa61-7b05-4557-a6d5-9da1c779bba1"
+        }
+      },
+      "Sandbox.SelectionSetsSystem": {
+        "Data": {
+          "SelectionSets": []
+        }
+      }
+    }
+  },
+  "ResourceVersion": 3,
+  "Title": "TD Game Fresh Start",
+  "Description": null,
+  "__references": [],
+  "__version": 3
+}

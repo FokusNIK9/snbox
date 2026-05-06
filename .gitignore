@@ -1,0 +1,43 @@
+
+# This file describes files and paths that should not be tracked by Git version control
+# https://git-scm.com/docs/gitignore
+
+# Auto-generated code editor files
+.vs/*
+.vscode/*
+*.csproj
+obj
+bin
+Properties/*
+code/obj/*
+code/Properties/*
+
+
+# Project exclusions
+__pycache__/
+.obsidian/
+.gemini/
+box_main/
+box_main/
+
+# Media files
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Auto-generated asset related files
+.sbox/*
+*.generated.*
+*.*_c
+!*.shader_c
+*.los
+*.vpk
+*launchSettings.json
+*.sln
+*.slnx
+
+*idea
+
+# Exported / standalone games
+Exports/
