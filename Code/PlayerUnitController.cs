@@ -30,11 +30,37 @@ public sealed class PlayerUnitController : Component
     {
         if ( Controller == null ) return;
 
-        if ( !IsProxy ) 
+        // ── Owner-only: input, cursor, physics, rotation ──
+        Vector3 wishVelocity = Vector3.Zero;
+        if ( !IsProxy )
         {
             UpdateCursorPosition();
+
+            var moveInput = Input.AnalogMove;
+            var camRot = Scene.Camera.WorldRotation;
+            var moveDir = camRot * new Vector3(moveInput.x, moveInput.y, 0);
+            moveDir.z = 0; 
+            
+            wishVelocity = moveDir.Normal * MoveSpeed;
+
+            Controller.Accelerate(wishVelocity);
+            Controller.ApplyFriction(4f);
+
+            if (!Controller.IsOnGround)
+                Controller.Velocity += Scene.PhysicsWorld.Gravity * Time.Delta;
+            else
+                Controller.Velocity = Controller.Velocity.WithZ(0);
+
+            Controller.Move();
+
+            var lookDir = (NetCursorPosition - WorldPosition).WithZ(0).Normal;
+            if ( lookDir.LengthSquared > 0.01f )
+            {
+                WorldRotation = Rotation.Slerp(WorldRotation, Rotation.LookAt(lookDir, Vector3.Up), Time.Delta * 15f);
+            }
         }
 
+        // ── All clients: cursor visual ──
         if ( CursorObject != null )
         {
             var targetPos = NetCursorPosition.WithZ( 5f );
@@ -45,10 +71,8 @@ public sealed class PlayerUnitController : Component
                 
             if ( _cursorRenderer != null )
             {
-                // Прозрачность: чем ближе к герою, тем прозрачнее
                 float dist = Vector3.DistanceBetween( WorldPosition.WithZ(0), NetCursorPosition.WithZ(0) );
                 
-                // Если дистанция меньше 120 юнитов - делаем прозрачнее. Минимум 0.15 альфа.
                 float targetAlpha = 1f;
                 if ( dist < 120f )
                 {
@@ -61,39 +85,15 @@ public sealed class PlayerUnitController : Component
             }
         }
 
-        Vector3 wishVelocity = Vector3.Zero;
-        if ( !IsProxy )
-        {
-            var moveInput = Input.AnalogMove;
-            var camRot = Scene.Camera.WorldRotation;
-            var moveDir = camRot * new Vector3(moveInput.x, moveInput.y, 0);
-            moveDir.z = 0; 
-            
-            wishVelocity = moveDir.Normal * MoveSpeed;
-
-            Controller.Accelerate(wishVelocity);
-            Controller.ApplyFriction(4f);
-        }
-        
-        if (!Controller.IsOnGround)
-            Controller.Velocity += Scene.PhysicsWorld.Gravity * Time.Delta;
-        else
-            Controller.Velocity = Controller.Velocity.WithZ(0);
-
-        Controller.Move();
-
-        var lookDir = (NetCursorPosition - WorldPosition).WithZ(0).Normal;
-        if ( lookDir.LengthSquared > 0.01f )
-        {
-            WorldRotation = Rotation.Slerp(WorldRotation, Rotation.LookAt(lookDir, Vector3.Up), Time.Delta * 15f);
-        }
-
+        // ── All clients: animation from synced data (Rule 2.2) ──
         if (AnimationHelper != null)
         {
+            var animLookDir = (NetCursorPosition - WorldPosition).WithZ(0).Normal;
+
             AnimationHelper.WithVelocity(Controller.Velocity);
             AnimationHelper.WithWishVelocity(wishVelocity); 
             AnimationHelper.IsGrounded = Controller.IsOnGround;
-            AnimationHelper.WithLook(lookDir, 1f, 1f, 0.5f); 
+            AnimationHelper.WithLook(animLookDir, 1f, 1f, 0.5f); 
         }
     }
 

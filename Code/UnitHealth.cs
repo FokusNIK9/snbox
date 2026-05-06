@@ -36,28 +36,31 @@ public sealed class UnitHealth : Component
 	public Action OnDeath { get; set; }
 	public Action OnRespawned { get; set; }
 
-	protected override void OnAwake()
+	protected override void OnStart()
 	{
-		Health = MaxHealth;
-		IsAlive = true;
+		if ( Networking.IsHost )
+		{
+			Health = MaxHealth;
+			IsAlive = true;
+		}
 	}
 
 	/// <summary>
-	/// Apply damage. If called on a proxy, sends an RPC to the owner.
+	/// Apply damage. Non-host callers route through RPC to the server.
 	/// </summary>
 	public void ApplyDamage( float damage )
 	{
-		if ( IsProxy )
+		if ( !Networking.IsHost )
 		{
-			ApplyDamageRpc( damage );
+			RequestDamageRpc( damage );
 			return;
 		}
 
 		ApplyDamageInternal( damage );
 	}
 
-	[Rpc.Owner]
-	private void ApplyDamageRpc( float damage )
+	[Rpc.Host]
+	private void RequestDamageRpc( float damage )
 	{
 		ApplyDamageInternal( damage );
 	}
@@ -84,7 +87,7 @@ public sealed class UnitHealth : Component
 	/// </summary>
 	public void Heal( float amount )
 	{
-		if ( IsProxy || !IsAlive )
+		if ( !Networking.IsHost || !IsAlive )
 			return;
 
 		var oldHealth = Health;

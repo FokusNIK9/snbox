@@ -2,7 +2,6 @@ using Sandbox;
 using Sandbox.Network;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 /// <summary>
 /// Manages lobby creation, player connections, and unit spawning.
@@ -79,7 +78,12 @@ public sealed class GameNetworkManager : Component, Component.INetworkListener
 		}
 
 		_lobbyCreated = true;
-		Networking.CreateLobby( new LobbyConfig() );
+		Networking.CreateLobby( new LobbyConfig
+		{
+			MaxPlayers = MaxPlayers,
+			Name = LobbyName,
+			Privacy = IsPublic ? LobbyPrivacy.Public : LobbyPrivacy.Private
+		} );
 	}
 
 	public void OnActive( Connection connection )
