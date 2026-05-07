@@ -47,7 +47,7 @@ public sealed class CargoTextDisplay : Component
 
         if ( Scene.Camera != null )
         {
-            WorldRotation = Rotation.LookAt( Scene.Camera.WorldPosition - WorldPosition );
+            WorldRotation = Rotation.LookAt( WorldPosition - Scene.Camera.WorldPosition );
         }
     }
 

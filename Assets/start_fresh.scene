@@ -202,10 +202,12 @@
           "__guid": "faea4b0a-058d-435d-af5a-6c6ad8008328",
           "__enabled": true,
           "Flags": 0,
+          "AllowCursorOffset": true,
           "AllowZoom": true,
-          "BackOffset": 200,
+          "CursorInfluence": 0.15,
           "FollowSpeed": 8,
           "Height": 600,
+          "MaxCursorOffset": 150,
           "MaxHeight": 1200,
           "MinHeight": 300,
           "OnComponentDestroy": null,
@@ -335,7 +337,16 @@
             "_type": "gameobject",
             "prefab": "player.prefab"
           },
-          "SpawnPoints": [],
+          "SpawnPoints": [
+            {
+              "_type": "gameobject",
+              "go": "ee431e8e-80dd-44e1-bff8-495750f3cbb5"
+            },
+            {
+              "_type": "gameobject",
+              "go": "a1b2c3d4-e5f6-4789-8b9c-0d1e2f3a4b5d"
+            }
+          ],
           "SpawnRandomRadius": 50
         }
       ],
