@@ -7,6 +7,8 @@ public sealed class TargetCursor : Component
     [Property] public Color HoverColor { get; set; } = Color.Green;
     [Property] public Vector3 NormalScale { get; set; } = Vector3.One;
     [Property] public Vector3 HoverScale { get; set; } = new Vector3( 1.5f );
+    [Property] public float NormalOffset { get; set; } = 5f;
+    [Property] public float HoverOffset { get; set; } = 20f;
 
     [Sync] public Vector3 NetCursorPosition { get; set; }
     [Sync] public bool IsHovering { get; set; }
@@ -39,28 +41,45 @@ public sealed class TargetCursor : Component
 
         if ( tr.Hit )
         {
-            // Смещение курсора по нормали, чтобы он не проваливался в текстуры
-            NetCursorPosition = tr.HitPosition + tr.Normal * 5f;
-
             var interactable = tr.GameObject?.Components.GetInAncestorsOrSelf<IInteractable>();
             if ( interactable != null && interactable.CanInteract( PlayerObject ) )
             {
                 if ( _currentInteractable != interactable )
                 {
+                    UnhighlightCurrent();
                     _currentInteractable = interactable;
                     _holdTimer = 0f;
+                    HighlightCurrent();
                 }
                 IsHovering = true;
+                NetCursorPosition = tr.HitPosition + tr.Normal * HoverOffset;
             }
-            else ClearInteractable();
+            else
+            {
+                ClearInteractable();
+                NetCursorPosition = tr.HitPosition + tr.Normal * NormalOffset;
+            }
         }
         else ClearInteractable();
 
         HandleInteraction();
     }
 
+    private void HighlightCurrent()
+    {
+        if ( _currentInteractable is InteractableObject obj )
+            obj.SetHighlighted( true );
+    }
+
+    private void UnhighlightCurrent()
+    {
+        if ( _currentInteractable is InteractableObject obj )
+            obj.SetHighlighted( false );
+    }
+
     private void ClearInteractable()
     {
+        UnhighlightCurrent();
         _currentInteractable = null;
         _holdTimer = 0f;
         IsHovering = false;
@@ -73,13 +92,24 @@ public sealed class TargetCursor : Component
         if ( Input.Down( "attack1" ) )
         {
             _holdTimer += Time.Delta;
+
+            if ( _currentInteractable is InteractableObject holdObj )
+            {
+                float progress = _holdTimer / _currentInteractable.InteractionTime;
+                holdObj.SetHoldProgress( progress );
+            }
+
             if ( _holdTimer >= _currentInteractable.InteractionTime )
             {
                 _currentInteractable.OnInteract( PlayerObject.Id );
                 _holdTimer = 0f;
             }
         }
-        else _holdTimer = 0f;
+        else
+        {
+            _holdTimer = 0f;
+            HighlightCurrent();
+        }
     }
 
     private void UpdateSharedVisualsAndMovement()

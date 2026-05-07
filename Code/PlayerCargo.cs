@@ -4,7 +4,15 @@ public sealed class PlayerCargo : Component, ICargoReceiver
 {
     [Property, Sync] public int CargoCount { get; set; } = 0;
 
-    // Вызывается на сервере для вора
+    [Property, Group( "Drop" ), Description( "Input action name for dropping cargo (set in Project Settings → Input)" )]
+    public string DropAction { get; set; } = "drop";
+
+    [Property, Group( "Drop" )]
+    public int DropAmount { get; set; } = 1;
+
+    [Property, Group( "Drop" ), Description( "Color tint of the dropped cargo bag" )]
+    public Color DropBagColor { get; set; } = new Color( 0.7f, 0.5f, 0.15f );
+
     public void AddCargo( int amount )
     {
         if ( IsProxy )
@@ -23,7 +31,6 @@ public sealed class PlayerCargo : Component, ICargoReceiver
         CargoCount += amount;
     }
 
-    // Вызывается на сервере для жертвы
     public void RemoveCargo( int amount )
     {
         if ( IsProxy )
@@ -44,7 +51,6 @@ public sealed class PlayerCargo : Component, ICargoReceiver
 
     protected override void OnStart()
     {
-        // Выдаем хосту стартовый груз для теста кражи
         if ( !IsProxy && Networking.IsHost )
         {
             CargoCount = 5;
@@ -67,9 +73,62 @@ public sealed class PlayerCargo : Component, ICargoReceiver
         }
     }
 
+    protected override void OnUpdate()
+    {
+        if ( IsProxy ) return;
+
+        if ( !string.IsNullOrEmpty( DropAction ) && Input.Pressed( DropAction ) && CargoCount > 0 )
+        {
+            Log.Info( $"[PlayerCargo] Drop key pressed, requesting drop..." );
+            RequestDropCargo();
+        }
+    }
+
+    [Rpc.Host]
+    private void RequestDropCargo()
+    {
+        if ( CargoCount <= 0 )
+        {
+            Log.Warning( "[PlayerCargo] Drop rejected: no cargo" );
+            return;
+        }
+
+        int amount = System.Math.Min( DropAmount, CargoCount );
+        RemoveCargo( amount );
+
+        var dropPos = WorldPosition + WorldRotation.Backward * 40f;
+        SpawnDroppedCargo( dropPos, amount );
+        Log.Info( $"[PlayerCargo] Dropped {amount} cargo at {dropPos}" );
+    }
+
+    private void SpawnDroppedCargo( Vector3 position, int amount )
+    {
+        var go = new GameObject();
+        go.Name = $"DroppedCargo ({amount})";
+        go.WorldPosition = position;
+        go.Tags.Add( "pickup" );
+
+        var renderer = go.Components.Create<ModelRenderer>();
+        renderer.Model = Model.Load( "models/dev/box.vmdl" );
+        renderer.Tint = DropBagColor;
+
+        var collider = go.Components.Create<BoxCollider>();
+        collider.Scale = new Vector3( 25, 25, 25 );
+
+        var interactable = go.Components.Create<InteractableObject>();
+        interactable.InteractionTime = 0.8f;
+        interactable.UseHighlight = true;
+        interactable.HighlightColor = new Color( 0.3f, 1f, 0.4f );
+        interactable.HoldColor = new Color( 1f, 0.9f, 0.2f );
+
+        var dropped = go.Components.Create<DroppedCargo>();
+        dropped.CargoCount = amount;
+
+        go.NetworkSpawn();
+    }
+
     private void HandleStolenBy( GameObject thief )
     {
-        // Выполняется строго на сервере (после валидации дистанции в InteractableObject)
         if ( CargoCount > 0 )
         {
             RemoveCargo( 1 );
