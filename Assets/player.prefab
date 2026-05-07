@@ -42,9 +42,20 @@
         "Flags": 0,
         "AnimationHelper": "9c158ed0-54ca-4d5c-b6b6-a122983ab026",
         "Controller": "9a1c3f48-efd3-4c7c-ad8d-86d494b2457e",
-        "CursorObject": "b2c3d4e5-f6a7-489b-9c0d-1e2f3a4b5c6d",
         "MoveSpeed": 300,
-        "NetCursorPosition": "0,0,0",
+        "OnComponentDestroy": null,
+        "OnComponentDisabled": null,
+        "OnComponentEnabled": null,
+        "OnComponentFixedUpdate": null,
+        "OnComponentStart": null,
+        "OnComponentUpdate": null
+      },
+      {
+        "__type": "PlayerCargo",
+        "__guid": "e1f2a3b4-c5d6-4e7f-8a9b-0c1d2e3f4a5b",
+        "__enabled": true,
+        "Flags": 0,
+        "CargoCount": 0,
         "OnComponentDestroy": null,
         "OnComponentDisabled": null,
         "OnComponentEnabled": null,
@@ -195,10 +206,164 @@
             "__enabled": true,
             "Flags": 0,
             "Model": "models/dev/sphere.vmdl",
-            "Tint": "1,0,0,1"
+            "Tint": "1,1,1,1",
+            "RenderOptions": {
+              "GameLayer": true,
+              "OverlayLayer": false,
+              "BloomLayer": false,
+              "AfterUILayer": false
+            },
+            "RenderType": "On",
+            "OnComponentDestroy": null,
+            "OnComponentDisabled": null,
+            "OnComponentEnabled": null,
+            "OnComponentFixedUpdate": null,
+            "OnComponentStart": null,
+            "OnComponentUpdate": null
+          },
+          {
+            "__type": "TargetCursor",
+            "__guid": "d4e5f6a7-b8c9-40d1-e2f3-a4b5c6d7e8f9",
+            "__enabled": true,
+            "Flags": 0,
+            "CursorRenderer": "c3d4e5f6-a7b8-49c0-d1e2-f3a4b5c6d7e8",
+            "NormalColor": "1,1,1,1",
+            "HoverColor": "0,1,0,1",
+            "NormalScale": "1,1,1",
+            "HoverScale": "1.5,1.5,1.5",
+            "OnComponentDestroy": null,
+            "OnComponentDisabled": null,
+            "OnComponentEnabled": null,
+            "OnComponentFixedUpdate": null,
+            "OnComponentStart": null,
+            "OnComponentUpdate": null
           }
         ],
         "Children": []
+      },
+      {
+        "__guid": "f1a2b3c4-d5e6-4f78-9a0b-1c2d3e4f5a6b",
+        "__version": 2,
+        "Flags": 0,
+        "Name": "InteractionPoint",
+        "Position": "0,-15,40",
+        "Rotation": "0,0,0,1",
+        "Scale": "1,1,1",
+        "Tags": "",
+        "Enabled": true,
+        "NetworkMode": 2,
+        "NetworkFlags": 0,
+        "NetworkOrphaned": 0,
+        "NetworkTransmit": true,
+        "OwnerTransfer": 1,
+        "Components": [
+          {
+            "__type": "Sandbox.BoxCollider",
+            "__guid": "a2b3c4d5-e6f7-4890-ab12-3c4d5e6f7a8b",
+            "__enabled": true,
+            "Flags": 0,
+            "Center": "0,0,0",
+            "IsTrigger": false,
+            "Scale": "30,30,30",
+            "Surface": null,
+            "OnComponentDestroy": null,
+            "OnComponentDisabled": null,
+            "OnComponentEnabled": null,
+            "OnComponentFixedUpdate": null,
+            "OnComponentStart": null,
+            "OnComponentUpdate": null
+          },
+          {
+            "__type": "Sandbox.ModelRenderer",
+            "__guid": "b3c4d5e6-f7a8-4901-bc23-4d5e6f7a8b9c",
+            "__enabled": true,
+            "Flags": 0,
+            "Model": "models/dev/box.vmdl",
+            "Tint": "0.8,0.6,0.2,1",
+            "RenderOptions": {
+              "GameLayer": true,
+              "OverlayLayer": false,
+              "BloomLayer": false,
+              "AfterUILayer": false
+            },
+            "RenderType": "On",
+            "OnComponentDestroy": null,
+            "OnComponentDisabled": null,
+            "OnComponentEnabled": null,
+            "OnComponentFixedUpdate": null,
+            "OnComponentStart": null,
+            "OnComponentUpdate": null
+          },
+          {
+            "__type": "InteractableObject",
+            "__guid": "c4d5e6f7-a8b9-4012-cd34-5e6f7a8b9c0d",
+            "__enabled": true,
+            "Flags": 0,
+            "InteractionTime": 1.5,
+            "IsActive": true,
+            "OnComponentDestroy": null,
+            "OnComponentDisabled": null,
+            "OnComponentEnabled": null,
+            "OnComponentFixedUpdate": null,
+            "OnComponentStart": null,
+            "OnComponentUpdate": null
+          }
+        ],
+        "Children": [
+          {
+            "__guid": "d5e6f7a8-b9c0-4123-de45-6f7a8b9c0d1e",
+            "__version": 2,
+            "Flags": 0,
+            "Name": "Text",
+            "Position": "0,0,25",
+            "Rotation": "0,0,0,1",
+            "Scale": "1,1,1",
+            "Tags": "",
+            "Enabled": true,
+            "NetworkMode": 2,
+            "NetworkFlags": 0,
+            "NetworkOrphaned": 0,
+            "NetworkTransmit": true,
+            "OwnerTransfer": 1,
+            "Components": [
+              {
+                "__type": "Sandbox.TextRenderer",
+                "__guid": "e6f7a8b9-c0d1-4234-ef56-7a8b9c0d1e2f",
+                "__enabled": true,
+                "Flags": 0,
+                "Text": "0",
+                "FontSize": 64,
+                "Color": "1,1,1,1",
+                "Scale": 0.3,
+                "RenderOptions": {
+                  "GameLayer": true,
+                  "OverlayLayer": false,
+                  "BloomLayer": false,
+                  "AfterUILayer": false
+                },
+                "OnComponentDestroy": null,
+                "OnComponentDisabled": null,
+                "OnComponentEnabled": null,
+                "OnComponentFixedUpdate": null,
+                "OnComponentStart": null,
+                "OnComponentUpdate": null
+              },
+              {
+                "__type": "CargoTextDisplay",
+                "__guid": "f7a8b9c0-d1e2-4345-f067-8a9b0c1d2e3f",
+                "__enabled": true,
+                "Flags": 0,
+                "OnComponentDestroy": null,
+                "OnComponentDisabled": null,
+                "OnComponentEnabled": null,
+                "OnComponentFixedUpdate": null,
+                "OnComponentStart": null,
+                "OnComponentUpdate": null
+              }
+            ],
+            "Children": []
+          }
+        ]
       }
     ],
     "__properties": {

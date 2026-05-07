@@ -9,10 +9,12 @@ public sealed class PlayerCargo : Component, ICargoReceiver
     {
         if ( IsProxy )
         {
+            Log.Info( $"[PlayerCargo] AddCargo({amount}) → routing to owner via RPC" );
             AddCargoRpc( amount );
             return;
         }
         CargoCount += amount;
+        Log.Info( $"[PlayerCargo] AddCargo({amount}) → CargoCount = {CargoCount}" );
     }
 
     [Rpc.Owner]
@@ -26,10 +28,12 @@ public sealed class PlayerCargo : Component, ICargoReceiver
     {
         if ( IsProxy )
         {
+            Log.Info( $"[PlayerCargo] RemoveCargo({amount}) → routing to owner via RPC" );
             RemoveCargoRpc( amount );
             return;
         }
         CargoCount -= amount;
+        Log.Info( $"[PlayerCargo] RemoveCargo({amount}) → CargoCount = {CargoCount}" );
     }
 
     [Rpc.Owner]
@@ -50,10 +54,16 @@ public sealed class PlayerCargo : Component, ICargoReceiver
 
     protected override void OnAwake()
     {
+        Log.Info( $"[PlayerCargo] OnAwake on {GameObject.Name}, IsProxy={IsProxy}" );
         var interactable = Components.GetInChildrenOrSelf<InteractableObject>();
         if ( interactable != null )
         {
             interactable.OnServerInteractionSuccess += HandleStolenBy;
+            Log.Info( $"[PlayerCargo] Subscribed to InteractableObject on {interactable.GameObject.Name}" );
+        }
+        else
+        {
+            Log.Warning( $"[PlayerCargo] InteractableObject NOT found in children of {GameObject.Name}" );
         }
     }
 
