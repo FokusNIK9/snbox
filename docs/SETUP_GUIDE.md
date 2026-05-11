@@ -11,6 +11,9 @@
 3. Позиция: `0, 0, 0` (оставь по умолчанию)
 4. В **Inspector** нажми **Add Component** и добавь:
    - `GameNetworkManager`
+
+> **Deprecated / superseded by MODULAR_ARCHITECTURE.md:** `GameNetworkManager` должен отвечать только за lobby, network setup и player spawning. Не добавляй в него волны, экономику, башни, enemies или UI.
+
 5. В свойствах `GameNetworkManager`:
    - **Max Players** → `20` (или сколько нужно)
    - **Is Public** → ✓ (галочка)
@@ -79,6 +82,9 @@
    - `PlayerCargo` (наш скрипт — система груза)
    - `UnitHealth` (наш скрипт — здоровье)
    - `UnitNameTag` (наш скрипт — имя над головой)
+
+> **Deprecated / superseded by MODULAR_ARCHITECTURE.md:** универсальный монолитный `UnitHealth` больше не является целевой архитектурой. Новый подход: базовый `HealthComponent` для HP/damage/death, а respawn, скрытие модели, уничтожение, награды и visual health — отдельные компоненты.
+
 5. В свойствах `PlayerUnitController`:
    - **Controller** → оставь пусто (найдёт сам через `Components.Get`)
    - **Animation Helper** → оставь пусто (найдёт сам)

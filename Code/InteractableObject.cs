@@ -1,14 +1,24 @@
 using Sandbox;
 using System;
 
-public sealed class InteractableObject : Component, IInteractable
+[Title( "Интерактивный объект" )]
+[Category( "Box Collector/Объекты" )]
+public sealed class InteractableObject : Component, IInteractable, IHoldProgressInteractable
 {
-    [Property] public float InteractionTime { get; set; } = 1.5f;
-    [Property] public bool IsActive { get; set; } = true;
+    [Property, Group( "Взаимодействие" ), Description( "Сколько секунд нужно удерживать кнопку для завершения взаимодействия." )]
+    public float InteractionTime { get; set; } = 1.5f;
 
-    [Property, Group( "Highlight" )] public bool UseHighlight { get; set; } = true;
-    [Property, Group( "Highlight" )] public Color HighlightColor { get; set; } = new Color( 0.2f, 1f, 0.3f );
-    [Property, Group( "Highlight" )] public Color HoldColor { get; set; } = new Color( 1f, 0.8f, 0.1f );
+    [Property, Group( "Взаимодействие" ), Description( "Можно ли сейчас взаимодействовать с объектом." )]
+    public bool IsActive { get; set; } = true;
+
+    [Property, Group( "Подсветка" ), Description( "Включить изменение цвета объекта при наведении и удержании." )]
+    public bool UseHighlight { get; set; } = true;
+
+    [Property, Group( "Подсветка" ), Description( "Цвет объекта при наведении курсора." )]
+    public Color HighlightColor { get; set; } = new Color( 0.2f, 1f, 0.3f );
+
+    [Property, Group( "Подсветка" ), Description( "Цвет объекта во время удержания кнопки взаимодействия." )]
+    public Color HoldColor { get; set; } = new Color( 1f, 0.8f, 0.1f );
 
     public Action<GameObject> OnServerInteractionSuccess;
 
@@ -19,6 +29,8 @@ public sealed class InteractableObject : Component, IInteractable
     public bool CanInteract( GameObject interactor )
     {
         if ( !IsActive ) return false;
+        if ( interactor == null ) return false;
+        if ( GameObject == null ) return false;
         if ( interactor == GameObject.Root ) return false;
         return true;
     }

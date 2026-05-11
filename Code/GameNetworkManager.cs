@@ -9,31 +9,33 @@ using System.Linq;
 /// If a NetworkHelper component is present on the same object (or in the scene),
 /// it handles network startup — GameNetworkManager will not create a lobby on its own.
 /// </summary>
+[Title( "Менеджер сети и игроков" )]
+[Category( "Box Collector/Сеть" )]
 public sealed class GameNetworkManager : Component, Component.INetworkListener
 {
 	// ── Lobby ───────────────────────────────────────────
 
-	[Property, Group( "Lobby" ), Range( 1, 32 )]
+	[Property, Group( "Лобби" ), Range( 1, 32 ), Description( "Максимальное количество игроков в лобби." )]
 	public int MaxPlayers { get; set; } = 20;
 
-	[Property, Group( "Lobby" )]
+	[Property, Group( "Лобби" ), Description( "Если включено, лобби будет публичным. Если выключено — приватным." )]
 	public bool IsPublic { get; set; } = true;
 
-	[Property, Group( "Lobby" )]
+	[Property, Group( "Лобби" ), Description( "Название лобби, которое видят игроки." )]
 	public string LobbyName { get; set; } = "TD Game";
 
-	[Property, Group( "Lobby" ), Description( "Automatically create a lobby when the scene starts. Ignored if a NetworkHelper is present." )]
+	[Property, Group( "Лобби" ), Description( "Автоматически создать лобби при старте сцены. Игнорируется, если в сцене есть NetworkHelper." )]
 	public bool AutoCreateLobby { get; set; } = true;
 
 	// ── Spawning ───────────────────────────────────────
 
-	[Property, Group( "Spawning" )]
+	[Property, Group( "Спавн" ), Description( "Prefab игрока, который создаётся при подключении." )]
 	public GameObject PlayerPrefab { get; set; }
 
-	[Property, Group( "Spawning" ), Description( "Spawn points cycled round-robin. If empty, spawns at this object's position." )]
+	[Property, Group( "Спавн" ), Description( "Точки спавна игроков по кругу. Если список пуст, игрок появляется на позиции этого объекта." )]
 	public List<GameObject> SpawnPoints { get; set; } = new();
 
-	[Property, Group( "Spawning" ), Range( 0f, 500f ), Description( "Random offset applied to spawn position" )]
+	[Property, Group( "Спавн" ), Range( 0f, 500f ), Description( "Случайное смещение от выбранной точки спавна." )]
 	public float SpawnRandomRadius { get; set; } = 50f;
 
 	// ── Runtime state ───────────────────────────────────

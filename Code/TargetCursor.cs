@@ -7,32 +7,48 @@ public enum CursorMode
     SurfaceSnap
 }
 
+[Title( "Целевой курсор" )]
+[Category( "Box Collector/Игрок" )]
 public sealed class TargetCursor : Component
 {
-    [Property] public ModelRenderer CursorRenderer { get; set; }
-    [Property] public Color NormalColor { get; set; } = Color.White;
-    [Property] public Color HoverColor { get; set; } = Color.Green;
-    [Property] public Vector3 NormalScale { get; set; } = Vector3.One;
-    [Property] public Vector3 HoverScale { get; set; } = new Vector3( 1.5f );
+    [Property, Group( "Визуал" ), Description( "Рендерер модели, который отображает курсор в мире." )]
+    public ModelRenderer CursorRenderer { get; set; }
 
-    [Property, Group( "Behavior" ), Description( "GroundPlane = cursor on ground, never sticks to objects. SurfaceSnap = cursor snaps to object center when hovering." )]
+    [Property, Group( "Визуал" ), Description( "Цвет курсора в обычном состоянии." )]
+    public Color NormalColor { get; set; } = Color.White;
+
+    [Property, Group( "Визуал" ), Description( "Цвет курсора при наведении на интерактивный или переносимый объект." )]
+    public Color HoverColor { get; set; } = Color.Green;
+
+    [Property, Group( "Визуал" ), Description( "Обычный размер курсора." )]
+    public Vector3 NormalScale { get; set; } = Vector3.One;
+
+    [Property, Group( "Визуал" ), Description( "Размер курсора при наведении на цель." )]
+    public Vector3 HoverScale { get; set; } = new Vector3( 1.5f );
+
+    [Property, Group( "Поведение" ), Description( "GroundPlane держит курсор на плоскости пола. SurfaceSnap визуально притягивает курсор к объекту при наведении." )]
     public CursorMode Mode { get; set; } = CursorMode.GroundPlane;
 
-    [Property, Group( "Behavior" ), Description( "Ground plane Z height (match your floor height)" )]
+    [Property, Group( "Поведение" ), Description( "Высота плоскости пола по Z, на которой рассчитывается позиция курсора." )]
     public float GroundHeight { get; set; } = 2f;
 
-    [Property, Group( "Behavior" ), Description( "Lerp speed for remote players only (local = instant)" )]
+    [Property, Group( "Поведение" ), Description( "Скорость сглаживания курсора удалённых игроков. Локальный курсор двигается мгновенно." )]
     public float RemoteLerpSpeed { get; set; } = 25f;
 
-    [Property, Group( "Behavior" ), Description( "SurfaceSnap: height above object center when hovering" )]
+    [Property, Group( "Поведение" ), Description( "Высота визуального курсора над центром объекта в режиме SurfaceSnap." )]
     public float SnapHeight { get; set; } = 30f;
 
     [Sync] public Vector3 NetCursorPosition { get; set; }
     [Sync] public bool IsHovering { get; set; }
+    public Guid HoveredObjectId { get; private set; }
+    public Vector3 VisualCursorPosition { get; private set; }
+    public IInteractable CurrentInteractable => _currentInteractable;
+    public GameObject PlayerObject { get; private set; }
 
-    private GameObject PlayerObject;
+    public bool IsLocked { get; set; }
+    public Guid LockedObjectId { get; set; }
+
     private IInteractable _currentInteractable;
-    private float _holdTimer;
 
     protected override void OnStart()
     {
@@ -62,47 +78,57 @@ public sealed class TargetCursor : Component
                 NetCursorPosition = mouseRay.Position + mouseRay.Forward * t;
         }
 
+        if ( IsLocked )
+        {
+            ClearInteractable();
+            IsHovering = LockedObjectId != Guid.Empty;
+            return;
+        }
+
         // ── Interaction: separate trace, cursor stays on ground ──
         var tr = Scene.Trace.Ray( mouseRay, 5000f )
             .IgnoreGameObjectHierarchy( PlayerObject )
             .Run();
 
+        HoveredObjectId = tr.Hit && tr.GameObject is not null ? tr.GameObject.Id : Guid.Empty;
+
         if ( tr.Hit )
         {
             var interactable = tr.GameObject?.Components.GetInAncestorsOrSelf<IInteractable>();
-            if ( interactable != null && interactable.CanInteract( PlayerObject ) )
+            var carryable = tr.GameObject?.Components.GetInAncestorsOrSelf<PhysicsCarryableObject>();
+
+            if ( (IsInteractableValid( interactable ) && interactable.CanInteract( PlayerObject )) || carryable != null )
             {
-                if ( _currentInteractable != interactable )
+                if ( interactable != null && _currentInteractable != interactable )
                 {
                     UnhighlightCurrent();
                     _currentInteractable = interactable;
-                    _holdTimer = 0f;
                     HighlightCurrent();
                 }
-                IsHovering = true;
-
-                // SurfaceSnap: override cursor to object center
-                if ( Mode == CursorMode.SurfaceSnap )
+                else if ( interactable == null && _currentInteractable != null )
                 {
-                    var objPos = tr.GameObject.WorldPosition;
-                    NetCursorPosition = new Vector3( objPos.x, objPos.y, objPos.z + SnapHeight );
+                    UnhighlightCurrent();
+                    _currentInteractable = null;
                 }
+                IsHovering = true;
             }
             else ClearInteractable();
         }
         else ClearInteractable();
-
-        HandleInteraction();
     }
 
     private void HighlightCurrent()
     {
+        if ( !IsInteractableValid( _currentInteractable ) ) return;
+
         if ( _currentInteractable is InteractableObject obj )
             obj.SetHighlighted( true );
     }
 
     private void UnhighlightCurrent()
     {
+        if ( !IsInteractableValid( _currentInteractable ) ) return;
+
         if ( _currentInteractable is InteractableObject obj )
             obj.SetHighlighted( false );
     }
@@ -111,57 +137,54 @@ public sealed class TargetCursor : Component
     {
         UnhighlightCurrent();
         _currentInteractable = null;
-        _holdTimer = 0f;
         IsHovering = false;
-    }
-
-    private void HandleInteraction()
-    {
-        if ( _currentInteractable == null ) return;
-
-        if ( Input.Down( "attack1" ) )
-        {
-            _holdTimer += Time.Delta;
-
-            if ( _currentInteractable is InteractableObject holdObj )
-            {
-                float progress = _holdTimer / _currentInteractable.InteractionTime;
-                holdObj.SetHoldProgress( progress );
-            }
-
-            if ( _holdTimer >= _currentInteractable.InteractionTime )
-            {
-                _currentInteractable.OnInteract( PlayerObject.Id );
-                _holdTimer = 0f;
-            }
-        }
-        else
-        {
-            _holdTimer = 0f;
-            HighlightCurrent();
-        }
     }
 
     private void UpdateVisuals()
     {
+        Vector3 visualTargetPos = NetCursorPosition;
+
+        // Visual snap logic (Separate from physics target)
+        if ( Mode == CursorMode.SurfaceSnap )
+        {
+            Guid snapId = IsLocked ? LockedObjectId : (IsHovering ? HoveredObjectId : Guid.Empty);
+            if ( snapId != Guid.Empty )
+            {
+                var snapObj = Scene.Directory.FindByGuid( snapId );
+                if ( snapObj.IsValid() )
+                {
+                    var objPos = snapObj.WorldPosition;
+                    visualTargetPos = new Vector3( objPos.x, objPos.y, objPos.z + SnapHeight );
+                }
+            }
+        }
+
+        VisualCursorPosition = visualTargetPos;
+
         // Local player: instant position. Remote: smooth lerp.
         if ( !PlayerObject.Network.IsProxy )
-            WorldPosition = NetCursorPosition;
+            WorldPosition = VisualCursorPosition;
         else
-            WorldPosition = Vector3.Lerp( WorldPosition, NetCursorPosition, Time.Delta * RemoteLerpSpeed );
+            WorldPosition = Vector3.Lerp( WorldPosition, VisualCursorPosition, Time.Delta * RemoteLerpSpeed );
 
         if ( CursorRenderer == null ) return;
 
         Vector3 targetScale = IsHovering ? HoverScale : NormalScale;
         Color targetColor = IsHovering ? HoverColor : NormalColor;
 
-        if ( !PlayerObject.Network.IsProxy && IsHovering && _holdTimer > 0f && _currentInteractable != null )
-        {
-            float progress = _holdTimer / _currentInteractable.InteractionTime;
-            targetScale = Vector3.Lerp( HoverScale, NormalScale * 1.1f, progress );
-        }
-
         CursorRenderer.Tint = Color.Lerp( CursorRenderer.Tint, targetColor, Time.Delta * 15f );
         WorldScale = Vector3.Lerp( WorldScale, targetScale, Time.Delta * 15f );
+    }
+
+    private bool IsInteractableValid( IInteractable interactable )
+    {
+        if ( interactable == null ) return false;
+
+        if ( interactable is Component component )
+        {
+            return component.GameObject != null;
+        }
+
+        return true;
     }
 }

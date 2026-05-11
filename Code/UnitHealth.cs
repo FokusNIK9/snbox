@@ -6,23 +6,25 @@ using System;
 /// Fully self-contained — does not require other custom components.
 /// Optionally disables PlayerUnitController on death if present.
 /// </summary>
+[Title( "Здоровье юнита" )]
+[Category( "Box Collector/Общие" )]
 public sealed class UnitHealth : Component
 {
 	// ── Configuration ─────────────────────────────────────
 
-	[Property, Group( "Health" ), Range( 1f, 10000f )]
+	[Property, Group( "Здоровье" ), Range( 1f, 10000f ), Description( "Максимальное количество здоровья. При старте и респавне здоровье устанавливается в это значение." )]
 	public float MaxHealth { get; set; } = 100f;
 
-	[Property, Group( "Respawn" )]
+	[Property, Group( "Респавн" ), Description( "Если включено, объект автоматически возрождается после смерти." )]
 	public bool AllowRespawn { get; set; } = true;
 
-	[Property, Group( "Respawn" ), Range( 0.5f, 30f ), ShowIf( "AllowRespawn", true )]
+	[Property, Group( "Респавн" ), Range( 0.5f, 30f ), ShowIf( "AllowRespawn", true ), Description( "Задержка перед возрождением в секундах." )]
 	public float RespawnDelay { get; set; } = 3f;
 
-	[Property, Group( "Respawn" ), ShowIf( "AllowRespawn", true ), Description( "If set, respawns here. Otherwise respawns at death position." )]
+	[Property, Group( "Респавн" ), ShowIf( "AllowRespawn", true ), Description( "Точка возрождения. Если не задана, объект возрождается на месте смерти." )]
 	public GameObject RespawnPoint { get; set; }
 
-	[Property, Group( "Visual" ), Description( "Disable model renderers on death" )]
+	[Property, Group( "Визуал" ), Description( "Скрывать модели объекта после смерти." )]
 	public bool HideOnDeath { get; set; } = true;
 
 	// ── Network state ─────────────────────────────────────

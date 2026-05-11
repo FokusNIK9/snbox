@@ -13,45 +13,47 @@ using System;
 ///   - Pitch-angle driven geometry: BackOffset is auto-calculated from Height + PitchAngle
 ///   - Snap-on-acquire: no jarring lerp when the target first appears or respawns
 /// </summary>
+[Title( "Камера сверху" )]
+[Category( "Box Collector/Камера" )]
 public sealed class TDCameraController : Component
 {
 	// ── Follow ────────────────────────────────────────────
 
-	[Property, Group( "Follow" ), Range( 100f, 2000f ), Description( "Default camera height above target" )]
+	[Property, Group( "Следование" ), Range( 100f, 2000f ), Description( "Базовая высота камеры над целью." )]
 	public float Height { get; set; } = 600f;
 
-	[Property, Group( "Follow" ), Range( 30f, 90f ), Description( "Pitch angle (90 = straight down, 60 = classic RTS angle)" )]
+	[Property, Group( "Следование" ), Range( 30f, 90f ), Description( "Угол наклона камеры. 90 — строго сверху, 60 — классический RTS-вид." )]
 	public float PitchAngle { get; set; } = 60f;
 
-	[Property, Group( "Follow" ), Range( 1f, 30f ), Description( "Follow responsiveness (higher = snappier)" )]
+	[Property, Group( "Следование" ), Range( 1f, 30f ), Description( "Скорость следования за игроком. Чем выше значение, тем резче камера." )]
 	public float FollowSpeed { get; set; } = 8f;
 
 	// ── Zoom ──────────────────────────────────────────────
 
-	[Property, Group( "Zoom" )]
+	[Property, Group( "Зум" ), Description( "Разрешить изменение высоты камеры колесом мыши." )]
 	public bool AllowZoom { get; set; } = true;
 
-	[Property, Group( "Zoom" ), Range( 200f, 800f ), ShowIf( "AllowZoom", true )]
+	[Property, Group( "Зум" ), Range( 200f, 800f ), ShowIf( "AllowZoom", true ), Description( "Минимальная высота камеры при приближении." )]
 	public float MinHeight { get; set; } = 300f;
 
-	[Property, Group( "Zoom" ), Range( 800f, 3000f ), ShowIf( "AllowZoom", true )]
+	[Property, Group( "Зум" ), Range( 800f, 3000f ), ShowIf( "AllowZoom", true ), Description( "Максимальная высота камеры при отдалении." )]
 	public float MaxHeight { get; set; } = 1200f;
 
-	[Property, Group( "Zoom" ), Range( 10f, 200f ), ShowIf( "AllowZoom", true ), Description( "Height change per scroll step" )]
+	[Property, Group( "Зум" ), Range( 10f, 200f ), ShowIf( "AllowZoom", true ), Description( "Изменение высоты за один шаг колеса мыши." )]
 	public float ZoomStep { get; set; } = 50f;
 
-	[Property, Group( "Zoom" ), Range( 1f, 20f ), ShowIf( "AllowZoom", true ) ]
+	[Property, Group( "Зум" ), Range( 1f, 20f ), ShowIf( "AllowZoom", true ), Description( "Скорость сглаживания зума." )]
 	public float ZoomSmoothing { get; set; } = 6f;
 
 	// ── Cursor Offset ─────────────────────────────────────
 
-	[Property, Group( "Cursor Offset" ), Description( "Shifts focus toward cursor for better vision in aim direction" )]
+	[Property, Group( "Смещение к курсору" ), Description( "Смещать фокус камеры к курсору, чтобы лучше видеть направление прицеливания." )]
 	public bool AllowCursorOffset { get; set; } = true;
 
-	[Property, Group( "Cursor Offset" ), Range( 0f, 0.5f ), ShowIf( "AllowCursorOffset", true ), Description( "Blend strength (0 = disabled, 0.5 = halfway to cursor)" )]
+	[Property, Group( "Смещение к курсору" ), Range( 0f, 0.5f ), ShowIf( "AllowCursorOffset", true ), Description( "Сила смещения фокуса. 0 — выключено, 0.5 — половина пути к курсору." )]
 	public float CursorInfluence { get; set; } = 0.15f;
 
-	[Property, Group( "Cursor Offset" ), Range( 50f, 500f ), ShowIf( "AllowCursorOffset", true ), Description( "Max offset distance in world units" )]
+	[Property, Group( "Смещение к курсору" ), Range( 50f, 500f ), ShowIf( "AllowCursorOffset", true ), Description( "Максимальная дистанция смещения фокуса в world units." )]
 	public float MaxCursorOffset { get; set; } = 150f;
 
 	// ── Internal ──────────────────────────────────────────

@@ -7,3 +7,8 @@ public interface IInteractable
     bool CanInteract( GameObject interactor );
     void OnInteract( Guid interactorNetworkId );
 }
+
+public interface IHoldProgressInteractable
+{
+    void SetHoldProgress( float progress );
+}
